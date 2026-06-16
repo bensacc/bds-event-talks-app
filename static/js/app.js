@@ -225,7 +225,7 @@ function updateCountBadges() {
     countAll.textContent = allNotes.length;
     countFeature.textContent = allNotes.filter(n => n.type === 'Feature').length;
     countIssue.textContent = allNotes.filter(n => n.type === 'Issue').length;
-    countChanged.textContent = allNotes.filter(n => n.type === 'Changed').length;
+    countChanged.textContent = allNotes.filter(n => n.type === 'Change').length;
     countDeprecated.textContent = allNotes.filter(n => n.type === 'Deprecated').length;
     countGeneral.textContent = allNotes.filter(n => n.type === 'General').length;
 }

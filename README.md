@@ -1,6 +1,6 @@
 # BigQuery Release Explorer
 
-A beautifully designed, premium web application built with Python Flask and plain vanilla HTML, CSS, and JS that fetches the BigQuery Release Notes from the official RSS/Atom feed (`https://docs.cloud.google.com/feeds/bigquery-release-notes.xml`), segments them, and provides interactive search, filtering, and X (formerly Twitter) sharing capabilities.
+web application built with Python Flask and plain vanilla HTML, CSS, and JS that fetches the BigQuery Release Notes from the official RSS/Atom feed (`https://docs.cloud.google.com/feeds/bigquery-release-notes.xml`), segments them, and provides interactive search, filtering, and X (formerly Twitter) sharing capabilities.
 
 ## Features
 

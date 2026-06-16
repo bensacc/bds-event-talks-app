@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BigQuery Release Explorer</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <!-- CSS File -->
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="glass-bg"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-logo">
+                <svg viewBox="0 0 24 24" class="logo-icon" fill="none" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                </svg>
+                <div class="logo-text">
+                    <h1>BigQuery</h1>
+                    <span class="sub-text">Release Notes Explorer</span>
+                </div>
+            </div>
+            
+            <div class="header-controls">
+                <div id="cache-indicator" class="cache-info">
+                    <span class="pulse-dot"></span>
+                    <span id="cache-time-text">Loading...</span>
+                </div>
+                <button id="btn-refresh" class="btn btn-primary" title="Force Refresh Feed">
+                    <svg id="spinner-icon" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.228 9H18.01" />
+                    </svg>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Layout Grid -->
+        <main class="app-layout">
+            <!-- Sidebar Panel -->
+            <aside class="sidebar glass-panel">
+                <div class="sidebar-section">
+                    <h3>Search Release Notes</h3>
+                    <div class="search-box">
+                        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" id="search-input" placeholder="Filter by keyword...">
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Filter by Type</h3>
+                    <div class="filter-group" id="filter-type-group">
+                        <button class="filter-chip active" data-type="all">
+                            <span>All Updates</span>
+                            <span class="badge" id="count-all">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="Feature" data-color="feature">
+                            <span class="dot feature-dot"></span>
+                            <span>Feature</span>
+                            <span class="badge" id="count-feature">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="Issue" data-color="issue">
+                            <span class="dot issue-dot"></span>
+                            <span>Issue</span>
+                            <span class="badge" id="count-issue">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="Changed" data-color="changed">
+                            <span class="dot changed-dot"></span>
+                            <span>Changed</span>
+                            <span class="badge" id="count-changed">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="Deprecated" data-color="deprecated">
+                            <span class="dot deprecated-dot"></span>
+                            <span>Deprecated</span>
+                            <span class="badge" id="count-deprecated">0</span>
+                        </button>
+                        <button class="filter-chip" data-type="General" data-color="general">
+                            <span class="dot general-dot"></span>
+                            <span>General</span>
+                            <span class="badge" id="count-general">0</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Release Stats</h3>
+                    <div class="stats-panel">
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-total-days">0</div>
+                            <div class="stat-label">Days with updates</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num" id="stat-latest-date">-</div>
+                            <div class="stat-label">Latest update date</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Release Notes List -->
+            <section class="content-area">
+                <div class="content-header">
+                    <h2 id="timeline-title">Update Timeline</h2>
+                    <div class="sort-selector">
+                        <label for="sort-order">Sort:</label>
+                        <select id="sort-order">
+                            <option value="desc">Newest First</option>
+                            <option value="asc">Oldest First</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="notes-container" class="notes-container">
+                    <!-- Release note cards will be dynamically injected here -->
+                    <div class="loading-state">
+                        <div class="double-bounce">
+                            <div class="bounce1"></div>
+                            <div class="bounce2"></div>
+                        </div>
+                        <p>Fetching the latest release notes...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Tweet Composer Modal -->
+    <div id="tweet-modal" class="modal-overlay">
+        <div class="modal-container glass-panel">
+            <header class="modal-header">
+                <div class="modal-title">
+                    <svg class="modal-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 10.742l-2.012 2.01c-.78.778-.78 2.04 0 2.82a2.007 2.007 0 002.828 0l2.012-2.01m-2.828-2.82a2.007 2.007 0 012.828 0l2.012 2.01m-2.828-2.82L12 12m0 0l2.828-2.828m0 0a2.007 2.007 0 012.828 0l2.012 2.01m-2.828-2.82a2.007 2.007 0 002.828 0l2.012-2.01M12 12l2.012-2.01" />
+                    </svg>
+                    <h2>Share Update on X (Twitter)</h2>
+                </div>
+                <button class="btn-close" id="btn-close-modal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </header>
+
+            <div class="modal-body">
+                <div class="source-card">
+                    <div class="source-header">
+                        <span id="modal-badge" class="badge-type">Feature</span>
+                        <span id="modal-date" class="source-date">June 15, 2026</span>
+                    </div>
+                    <div id="modal-source-text" class="source-preview">
+                        <!-- Short text preview -->
+                    </div>
+                </div>
+
+                <div class="composer-container">
+                    <label for="tweet-textarea">Compose your post:</label>
+                    <textarea id="tweet-textarea" rows="5" maxlength="280"></textarea>
+                    
+                    <div class="composer-meta">
+                        <div class="character-counter">
+                            <span id="char-count">0</span> / 280
+                        </div>
+                        <div class="composer-tips">
+                            <span>Includes link to release notes</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="modal-footer">
+                <button class="btn btn-secondary" id="btn-cancel-tweet">Cancel</button>
+                <button class="btn btn-twitter" id="btn-submit-tweet">
+                    <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                        <!-- X / Twitter Icon -->
+                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <span>Post to X</span>
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast">
+        <span id="toast-message">Notification message</span>
+    </div>
+
+    <!-- JS File -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

@@ -24,9 +24,9 @@
     --color-issue-bg: rgba(244, 63, 94, 0.08);
     --color-issue-border: rgba(244, 63, 94, 0.2);
     
-    --color-changed: #0ea5e9;
-    --color-changed-bg: rgba(14, 165, 233, 0.08);
-    --color-changed-border: rgba(14, 165, 233, 0.2);
+    --color-change: #0ea5e9;
+    --color-change-bg: rgba(14, 165, 233, 0.08);
+    --color-change-border: rgba(14, 165, 233, 0.2);
     
     --color-deprecated: #f59e0b;
     --color-deprecated-bg: rgba(245, 158, 11, 0.08);
